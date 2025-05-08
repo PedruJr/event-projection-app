@@ -1,0 +1,10 @@
+<!-- src/app/presentation/components/organisms/start-entities/start-entities.component.html -->
+<section class="start-entities">
+  <h2>Entidades a iniciar</h2>
+  <input
+    type="number"
+    min="1"
+    [ngModel]="value()"
+    (ngModelChange)="onValueChange($event)"
+  />
+</section>

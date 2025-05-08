@@ -1,0 +1,64 @@
+<section class="selector">
+  <div class="selector-header" (click)="toggleExpand()">
+    <h2>
+      Selecione ciclos
+      <span class="optional">(opcional)</span>
+    </h2>
+    <mat-icon class="expand-icon">{{ expanded() ? 'expand_less' : 'expand_more' }}</mat-icon>
+  </div>
+
+  <p class="description">
+    Por padrão as entidades são selecionadas automaticamente de acordo com os ciclos que você participa e suas prioridades
+  </p>
+
+  <div class="table-container" *ngIf="expanded">
+    <table>
+      <thead>
+      <tr>
+        <th class="highlight">Ciclos <mat-icon class="icon-arrow">expand_more</mat-icon></th>
+        <th>Selecionados/Disponíveis</th>
+        <th>Eventos para hoje</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="section-divider" *ngIf="activeCycles().length">
+        <td colspan="3">Ciclos com entidades disponíveis ({{ activeCycles().length }})</td>
+      </tr>
+      <tr *ngFor="let cycle of activeCycles(); trackBy: trackByName">
+        <td>
+          <div class="row">
+            <mat-checkbox
+              [checked]="cycle.selected"
+              [disabled]="cycle.availableEntities === 0"
+              (change)="toggleCycle(cycle.name)">
+            </mat-checkbox>
+            <mat-icon class="priority" [ngClass]="cycle.priority.toLowerCase()">
+              {{ getPriorityIcon(cycle.priority, cycle.availableEntities) }}
+            </mat-icon>
+            <span>{{ cycle.name }}</span>
+          </div>
+        </td>
+        <td>
+          <span class="selected-bold">{{ cycle.selectedEntities }}</span>
+          <span class="divider">/{{ cycle.availableEntities }}</span>
+        </td>
+        <td><strong>{{ cycle.todayEvents }}</strong></td>
+      </tr>
+
+      <tr class="section-divider" *ngIf="disabledCycles().length">
+        <td colspan="3">Ciclos sem entidades disponíveis</td>
+      </tr>
+      <tr *ngFor="let cycle of disabledCycles(); trackBy: trackByName">
+        <td>
+          <div class="row">
+            <mat-icon class="priority inactive">block</mat-icon>
+            <span>{{ cycle.name }}</span>
+          </div>
+        </td>
+        <td>0/{{ cycle.availableEntities }}</td>
+        <td>0</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

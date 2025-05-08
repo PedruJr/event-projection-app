@@ -1,0 +1,11 @@
+<div class="page-wrapper">
+  <app-start-entities />
+  <app-cycle-selector />
+
+  <h2>Previsão de eventos futuros</h2>
+  <p>
+    A previsão inclui eventos dos ciclos relacionados às entidades e é atualizada sempre que novas entidades forem iniciadas.
+  </p>
+
+  <app-events-chart [data]="chartData()" />
+</div>
