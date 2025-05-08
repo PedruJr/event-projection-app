@@ -32,11 +32,21 @@ export class CycleSelectorComponent {
   }
 
   getPriorityIcon(priority: string, entities: number): string {
-    if (entities === 0) return 'arrow_downward';
-    return priority === 'HIGH'
-      ? 'arrow_upward'
-      : priority === 'MEDIUM'
-        ? 'arrow_upward'
-        : 'arrow_upward';
+    return entities === 0 ? 'arrow_downward' : 'arrow_upward';
+  }
+
+  getIconColor(priority: string, entities: number): string {
+    if (entities === 0) return 'blue-twitter';
+    if (priority === 'HIGH') return 'high';
+    if (priority === 'MEDIUM') return 'medium';
+    return 'low';
+  }
+
+  formatName(name: string): string {
+    return name
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   }
 }

@@ -1,13 +1,13 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventsChartComponent, ProjectedEventGroup } from '../../components/organisms/events-chart/events-chart.component';
-import {CycleSelectorComponent} from '../../components/organisms/cycle-selector/cycle-selector.component';
 import {StartEntitiesComponent} from '../../components/organisms/start-entities/start-entities.component';
+import {CycleSelectorComponent} from '../../components/organisms/cycle-selector/cycle-selector.component';
 
 @Component({
   standalone: true,
   selector: 'app-event-projection',
-  imports: [CommonModule, EventsChartComponent, CycleSelectorComponent, StartEntitiesComponent],
+  imports: [CommonModule, EventsChartComponent, StartEntitiesComponent, CycleSelectorComponent],
   templateUrl: './event-projection.component.html',
   styleUrls: ['./event-projection.component.scss']
 })
