@@ -1,5 +1,7 @@
 import { signal } from '@angular/core';
 
+export const startEntitiesSignal = signal<number>(1);
+
 export const startEntities = signal<number>(1);
 
 export const setStartEntities = (value: number) => {
