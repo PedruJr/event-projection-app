@@ -1,8 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventsChartComponent, ProjectedEventGroup } from '../../components/organisms/events-chart/events-chart.component';
-import {StartEntitiesComponent} from '../../components/organisms/start-entities/start-entities.component';
-import {CycleSelectorComponent} from '../../components/organisms/cycle-selector/cycle-selector.component';
+import { StartEntitiesComponent } from '../../components/organisms/start-entities/start-entities.component';
+import { CycleSelectorComponent } from '../../components/organisms/cycle-selector/cycle-selector.component';
 
 @Component({
   standalone: true,
@@ -12,7 +12,7 @@ import {CycleSelectorComponent} from '../../components/organisms/cycle-selector/
   styleUrls: ['./event-projection.component.scss']
 })
 export class EventProjectionComponent {
-  // Mock data simulado
+  // Dados mockados temporários
   readonly chartData = signal<ProjectedEventGroup[]>([
     { day: 'Hoje', encounters: 10, messages: 40, checkpoints: 50, exploration: 20 },
     { day: 'Qui', encounters: 5, messages: 20, checkpoints: 40, exploration: 15 },

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { eventsProjection } from '../../core/mocks/mock-events-projection';
 import { Cycle } from '../models/cycle.model';
 
-export type ActivityType = 'follow' | 'qualification';
+export type ActivityType = 'follow' | 'qualification' | 'checkpoint' | 'exploration';
 
 export interface ProjectedEventGroup {
   dayOfWeek: number;
@@ -59,3 +59,4 @@ export class ProjectionService {
     }));
   }
 }
+
