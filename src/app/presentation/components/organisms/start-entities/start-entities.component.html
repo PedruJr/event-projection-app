@@ -1,10 +1,36 @@
-<!-- src/app/presentation/components/organisms/start-entities/start-entities.component.html -->
-<section class="start-entities">
-  <h2>Entidades a iniciar</h2>
-  <input
-    type="number"
-    min="1"
-    [ngModel]="value()"
-    (ngModelChange)="onValueChange($event)"
-  />
+<section class="start-entities-card">
+  <div class="start-entities-header">
+    <div class="text-block">
+      <h2>Entidades à iniciar</h2>
+      <p class="description">
+        Após o início, os eventos serão disponibilizados para execução nos dias que estão definidos em seus ciclos.
+      </p>
+    </div>
+
+    <div class="action-block">
+      <div class="input-group">
+        <div class="play-block">
+          <mat-icon>play_arrow</mat-icon>
+        </div>
+
+        <div class="input-block">
+          <input
+            type="number"
+            min="1"
+            [ngModel]="value()"
+            (ngModelChange)="onValueChange($event)"
+          />
+        </div>
+
+        <div class="label-block">
+          Entidades
+        </div>
+      </div>
+
+      <div class="event-count">
+        Novos eventos para hoje: <strong>35 eventos</strong>
+      </div>
+    </div>
+  </div>
 </section>
+<hr class="section-divider" />

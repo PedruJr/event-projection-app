@@ -14,10 +14,9 @@
       }
 
       .optional {
-        font-weight: 400;
         font-weight: 500;
 
-        font-size: 1rem;
+        font-size: 1.1rem;
         color: #999;
         position: relative;
       }
@@ -174,8 +173,8 @@
   .priority-icon {
     font-size: 1.6rem;
     vertical-align: middle;
-    margin-left: -1.5em;
-    margin-right: -0.5em;
+    margin-left: 1.3em;
+    margin-right: -0.8em;
 
     &.high {
       color: #f44336;
