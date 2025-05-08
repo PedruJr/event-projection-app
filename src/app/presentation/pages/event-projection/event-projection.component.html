@@ -3,4 +3,9 @@
   <app-start-entities />
   <app-cycle-selector />
   <app-events-chart [data]="chartData()" />
+
+  <div class="actions">
+    <button class="secondary-btn">Fechar</button>
+    <button class="primary-btn" (click)="recalcularProjecao()">Iniciar novas entidades</button>
+  </div>
 </div>

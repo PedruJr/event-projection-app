@@ -4,6 +4,7 @@ import { projectedEventsSignal } from '../../../../core/signals/projection.signa
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import {cyclesSignal} from '../../../../core/signals/cycles.signal';
 
 @Component({
   selector: 'app-start-entities',
@@ -27,4 +28,6 @@ export class StartEntitiesComponent {
     const today = new Date().getDay() === 0 ? 1 : new Date().getDay();
     return this.eventsToday().filter(e => e.dayOfWeek === today).reduce((acc, cur) => acc + cur.count, 0);
   }
+
+
 }
