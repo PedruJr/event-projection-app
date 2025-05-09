@@ -1,6 +1,9 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { projectedEventsSignal } from '../../../../core/signals/projection.signal';
+import { startEntitiesSignal } from '../../../../core/signals/start-entities.signal';
+import type { ProjectedEventGroup } from '../../../../core/services/projection.service';
 
 @Component({
   standalone: true,
@@ -12,11 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 export class StartEntitiesComponent {
   value = signal(1);
 
-<<<<<<< Updated upstream
-  onValueChange(newValue: number) {
-    if (newValue > 0) this.value.set(newValue);
-=======
-  // Acesso direto à projeção atual de eventos
+  // Sinal com os dados dos eventos projetados
   eventsToday = projectedEventsSignal;
 
   // Atualiza o número de entidades ao mudar input
@@ -29,20 +28,20 @@ export class StartEntitiesComponent {
     }
   }
 
-  // Calcula o total de eventos no dia atual
+  // Soma total de eventos do dia atual
   get todayCount(): number {
     const today = new Date().getDay() === 0 ? 1 : new Date().getDay();
     const total = this.eventsToday()
-      .filter(e => e.dayOfWeek === today)
-      .reduce((acc, cur) => acc + cur.count, 0);
+      .filter((e: ProjectedEventGroup) => e.dayOfWeek === today)
+      .reduce((acc: number, cur: ProjectedEventGroup) => acc + cur.count, 0);
     return total;
   }
 
+  // Bloqueia caracteres inválidos no input
   blockInvalidKeys(event: KeyboardEvent) {
     const invalidKeys = ['-', '+', 'e', 'E', '.', ',', '0'];
     if (invalidKeys.includes(event.key)) {
       event.preventDefault();
     }
->>>>>>> Stashed changes
   }
 }

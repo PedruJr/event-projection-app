@@ -10,8 +10,6 @@ h2 {
   margin-bottom: 2em;
   color: #161616;
 }
-<<<<<<< Updated upstream
-=======
 
 .actions {
   display: flex;
@@ -66,4 +64,11 @@ h2 {
   margin-bottom: 1em;
 }
 
->>>>>>> Stashed changes
+.close-btn {
+  font-size: 3rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  margin-bottom: 1em;
+}
