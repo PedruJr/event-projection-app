@@ -24,6 +24,18 @@ export class EventsChartComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data']) {
+      console.log('[Chart] ngOnChanges() recebeu novo data:', this.data);
+
+      const hasValidData = this.data.some(
+        d => d.day && (d.encounters || d.messages || d.checkpoints || d.exploration)
+      );
+
+      if (!hasValidData) {
+        console.warn('[Chart] Dados inválidos ou vazios. Gráfico será limpo.');
+        this.chartOptions = {};
+        return;
+      }
+
       this.updateChartOptions();
     }
   }
