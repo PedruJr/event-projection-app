@@ -13,9 +13,18 @@ import { NgClass, NgForOf, NgIf } from '@angular/common';
 export class CycleSelectorComponent implements OnInit {
   // Armazena todos os ciclos disponíveis
   allCycles: Cycle[] = [];
+  mockedDisabledCycles = [
+    { name: 'Duvidas LGPD', availableEntities: 0 },
+    { name: 'Ciclo Inbound', availableEntities: 0 },
+    { name: 'Ciclo Salesforce', availableEntities: 0 },
+    { name: 'Indústria Outbound', availableEntities: 0 },
+    { name: 'Ciclo automático', availableEntities: 0 },
+    { name: 'Midsize', availableEntities: 0 }
+  ];
 
   // Controla se a lista está expandida ou não
   expanded = signal(true);
+  disabledSectionExpanded = signal(true);
 
   ngOnInit(): void {
     // Carrega os ciclos ordenados por prioridade
@@ -66,7 +75,7 @@ export class CycleSelectorComponent implements OnInit {
   getPriorityIcon(priority: string, available: number): string {
     if (available === 0) return 'arrow_downward';
     if (priority === 'HIGH') return 'arrow_upward';
-    if (priority === 'MEDIUM') return 'arrow_forward';
+    if (priority === 'MEDIUM') return 'arrow_upward';
     return 'arrow_downward';
   }
 
@@ -81,5 +90,19 @@ export class CycleSelectorComponent implements OnInit {
   // Formata o nome do ciclo (primeira letra maiúscula)
   formatName(name: string): string {
     return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
+  toggleDisabledSection() {
+    this.disabledSectionExpanded.set(!this.disabledSectionExpanded());
+  }
+
+  // Define a cor da seta com base no índice
+  getMockedPriorityColor(index: number): string {
+    return index <= 1 ? 'priority-high' : 'priority-medium';
+  }
+
+  // Define o ícone da seta com base no índice
+  getMockedPriorityIcon(index: number): string {
+    return 'arrow_upward';
   }
 }

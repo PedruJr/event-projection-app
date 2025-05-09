@@ -205,3 +205,13 @@
 .priority-medium { color: #fb8c00; }
 .priority-low { color: #42a5f5; }
 .text-muted { color: #ccc; }
+.priority-high { color: #e53935; }
+.priority-medium { color: #fb8c00; }
+.priority-low { color: #42a5f5; }
+.text-muted { color: #ccc; }
+.row-disabled {
+  display: flex;
+  align-items: center;
+  gap: 2em;
+  margin-left: -2.2rem;
+}

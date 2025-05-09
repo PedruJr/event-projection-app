@@ -4,6 +4,7 @@ import { projectedEventsSignal } from '../../../../core/signals/projection.signa
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import type { ProjectedEventGroup } from '../../../../core/services/projection.service';
 
 @Component({
   selector: 'app-start-entities',
@@ -22,16 +23,27 @@ export class StartEntitiesComponent {
   // Atualiza o número de entidades ao mudar input
   onValueChange(value: string) {
     const num = parseInt(value, 10);
-    if (!isNaN(num) && num > 0) {
+    if (!isNaN(num) && num >= 1) {
       startEntitiesSignal.set(num);
+    } else {
+      startEntitiesSignal.set(1);
     }
   }
 
-  // Calcula o total de eventos no dia atual
+  // Soma total de eventos do dia atual
   get todayCount(): number {
     const today = new Date().getDay() === 0 ? 1 : new Date().getDay();
-    return this.eventsToday()
-      .filter(e => e.dayOfWeek === today)
-      .reduce((acc, cur) => acc + cur.count, 0);
+    const total = this.eventsToday()
+      .filter((e: ProjectedEventGroup) => e.dayOfWeek === today)
+      .reduce((acc: number, cur: ProjectedEventGroup) => acc + cur.count, 0);
+    return total;
+  }
+
+  // Bloqueia caracteres inválidos no input
+  blockInvalidKeys(event: KeyboardEvent) {
+    const invalidKeys = ['-', '+', 'e', 'E', '.', ',', '0'];
+    if (invalidKeys.includes(event.key)) {
+      event.preventDefault();
+    }
   }
 }
