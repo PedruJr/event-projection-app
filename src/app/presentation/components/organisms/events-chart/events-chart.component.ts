@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgxEchartsModule } from 'ngx-echarts';
 
 export interface ProjectedEventGroup {
-  day: string;
+  day: string; // Ex: "1", "2", ...
   encounters: number;
   messages: number;
   checkpoints: number;
@@ -20,19 +20,12 @@ type EChartsInstance = any;
   styleUrls: ['./events-chart.component.scss']
 })
 export class EventsChartComponent implements OnChanges {
-  // Dados recebidos como input para o gráfico
   @Input() data: ProjectedEventGroup[] = [];
-
-  // Configurações da instância do gráfico
   chartOptions: any = {};
-
-  // Referência à instância do gráfico ECharts
   private chartRef: EChartsInstance | null = null;
 
-  // Detecta mudanças nas propriedades do componente
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data']) {
-      console.log("changes que chegam no chart component", changes);
       const hasValidData = this.data.some(
         d => d.day && (d.encounters || d.messages || d.checkpoints || d.exploration)
       );
@@ -42,18 +35,32 @@ export class EventsChartComponent implements OnChanges {
         return;
       }
 
-      // Atualiza o gráfico com os novos dados
       this.updateChartOptions();
     }
   }
 
-  // Executado quando o gráfico é inicializado
   onChartInit(chart: EChartsInstance) {
     this.chartRef = chart;
   }
 
-  // Atualiza as opções de exibição do gráfico
+  private getDayLabels(): string[] {
+    const weekdayNames = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+    const today = new Date().getDay(); // 0=Dom, 1=Seg, ..., 6=Sab
+
+    let dayIndex = today === 0 ? 1 : today > 5 ? 1 : today;
+    const labels: string[] = [];
+
+    for (let i = 0; labels.length < 5; i++) {
+      let next = (dayIndex + i - 1) % 5;
+      labels.push(i === 0 ? 'Hoje' : weekdayNames[(next) % 5]);
+    }
+
+    return labels;
+  }
+
   private updateChartOptions() {
+    const labels = this.getDayLabels();
+
     const newOptions = {
       tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
       legend: {
@@ -68,10 +75,15 @@ export class EventsChartComponent implements OnChanges {
       grid: { left: '6%', right: '4%', bottom: '20%', containLabel: true },
       xAxis: {
         type: 'category',
-        data: this.data.map(d => d.day),
+        data: labels,
         boundaryGap: true,
         axisTick: { alignWithLabel: true },
-        axisLabel: { align: 'center', interval: 0 },
+        axisLabel: {
+          align: 'center',
+          interval: 0,
+          margin: 8, // < diminui a distância vertical da label até o eixo
+          fontSize: 11 // < deixa mais compacto
+        },
         offset: 12
       },
       yAxis: {
@@ -126,11 +138,9 @@ export class EventsChartComponent implements OnChanges {
       ]
     };
 
-    // Se o gráfico já estiver instanciado, aplica as opções imediatamente
     if (this.chartRef) {
       this.chartRef.setOption(newOptions, true);
     } else {
-      // Caso contrário, armazena as opções até a inicialização
       this.chartOptions = newOptions;
     }
   }

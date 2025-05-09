@@ -57,7 +57,6 @@ export class EventProjectionComponent implements OnInit {
       }
     }
 
-    // Processa também os dados vindos dos ciclos com estrutura
     for (const cycle of cycles) {
       const structure = cycle.structure;
       if (!structure) continue;
@@ -118,23 +117,15 @@ export class EventProjectionComponent implements OnInit {
     }, 300);
   }
 
-  carregarMockInicial() {
-    const result = this.projectionService.getProjectedEvents(mockCycles, 0);
-    projectedEventsSignal.set(result);
-  }
 
   recalcularProjecao() {
-    const entities = startEntitiesSignal();
-    const cycles = cyclesSignal();
-
-    if (!entities || entities <= 0 || cycles.length === 0) {
-      console.warn('[Recalcular] Dados insuficientes');
-      return;
-    }
-
     loadingProjectionSignal.set(true);
-    const result = this.projectionService.getProjectedEvents(cycles, entities);
-    projectedEventsSignal.set(result);
-    loadingProjectionSignal.set(false);
+
+    const current = projectedEventsSignal();
+    projectedEventsSignal.set([]); // limpa brevemente
+    setTimeout(() => {
+      projectedEventsSignal.set([...current]);
+      loadingProjectionSignal.set(false);
+    }, 500);
   }
 }
