@@ -25,6 +25,7 @@ export class EventProjectionComponent implements OnInit {
   chartData = computed(() => {
     const raw = projectedEventsSignal();
     const cycles = cyclesSignal();
+    const entities = startEntitiesSignal();
 
     const grouped: Record<number, ChartRow> = {};
 
@@ -75,10 +76,10 @@ export class EventProjectionComponent implements OnInit {
           };
         }
 
-        grouped[day].encounters += eventData["meetings"] ?? 0;
-        grouped[day].messages += eventData["emails"] ?? 0;
-        grouped[day].checkpoints += eventData["calls"] ?? 0;
-        grouped[day].exploration += eventData["follows"] ?? 0;
+        grouped[day].encounters += (eventData["meetings"] ?? 0) * entities;
+        grouped[day].messages += (eventData["emails"] ?? 0) * entities;
+        grouped[day].checkpoints += (eventData["calls"] ?? 0) * entities;
+        grouped[day].exploration += (eventData["follows"] ?? 0) * entities;
       }
     }
 
