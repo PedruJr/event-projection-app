@@ -1,93 +1,75 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
+import { Component, OnInit, signal } from '@angular/core';
 import { cyclesSignal, orderedCyclesByPriority } from '../../../../core/signals/cycles.signal';
-import { projectedEventsSignal } from '../../../../core/signals/projection.signal';
 import { Cycle } from '../../../../core/models/cycle.model';
-
-interface UICycle extends Cycle {
-  selected: boolean;
-  selectedEntities: number;
-  todayEvents: number;
-}
+import { MatIcon } from '@angular/material/icon';
+import { NgClass, NgForOf, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-cycle-selector',
-  standalone: true,
-  imports: [CommonModule, MatIconModule],
   templateUrl: './cycle-selector.component.html',
-  styleUrls: ['./cycle-selector.component.scss']
+  styleUrls: ['./cycle-selector.component.scss'],
+  imports: [
+    MatIcon,
+    NgClass,
+    NgIf,
+    NgForOf
+  ]
 })
 export class CycleSelectorComponent implements OnInit {
-  private expandedSignal = signal(false);
-  expanded = computed(() => this.expandedSignal());
-
-  allCycles: UICycle[] = [];
+  allCycles: Cycle[] = [];
+  expanded = signal(true);
 
   ngOnInit(): void {
-    const selected = cyclesSignal();
-    const projection = projectedEventsSignal();
-    const today = new Date().getDay() === 0 ? 1 : new Date().getDay();
-
-    this.allCycles = orderedCyclesByPriority().map(cycle => {
-      const isSelected = selected.some(s => s.name === cycle.name);
-      const todayEvents = projection
-          .filter(e => e.dayOfWeek === today)
-          .filter(e => e.activityType === 'follow' || e.activityType === 'qualification')
-          .reduce((acc, cur) => acc + cur.count, 0);
-
-      return {
-        ...cycle,
-        selected: isSelected,
-        selectedEntities: isSelected ? 1 : 0,
-        todayEvents: isSelected ? todayEvents : 0
-      };
-    });
+    const cycles = orderedCyclesByPriority();
+    this.allCycles = cycles;
+    cyclesSignal.set(cycles.filter(c => c.selected));
+    console.log('[CycleSelector] Ciclos carregados:', cycles);
   }
 
   toggleExpand() {
-    this.expandedSignal.set(!this.expandedSignal());
+    this.expanded.set(!this.expanded());
   }
 
-  toggleCycle(name: string) {
-    const current = cyclesSignal();
-    const found = current.find(c => c.name === name);
-    if (found) {
-      cyclesSignal.set(current.filter(c => c.name !== name));
-    } else {
-      const all = orderedCyclesByPriority();
-      const toAdd = all.find(c => c.name === name);
-      if (toAdd) cyclesSignal.set([...current, toAdd]);
-    }
+  toggleCycle(cycleName: string) {
+    this.allCycles = this.allCycles.map(c => {
+      if (c.name === cycleName && c.availableEntities > 0) {
+        return { ...c, selected: !c.selected };
+      }
+      return c;
+    });
+    const selected = this.allCycles.filter(c => c.selected);
+
+    cyclesSignal.set(selected);
+    console.log('[CycleSelector] Ciclos atualizados:', selected);
   }
 
-  activeCycles(): UICycle[] {
-    return this.allCycles.filter(c => c.availableEntities && c.availableEntities > 0);
+  activeCycles(): Cycle[] {
+    return this.allCycles.filter(c => c.availableEntities > 0);
   }
 
-  disabledCycles(): UICycle[] {
-    return this.allCycles.filter(c => !c.availableEntities || c.availableEntities <= 0);
+  disabledCycles(): Cycle[] {
+    return this.allCycles.filter(c => c.availableEntities === 0);
+  }
+
+  trackByName(index: number, item: Cycle): string {
+    return item.name;
+  }
+
+  getPriorityIcon(priority: string, available: number): string {
+    if (available === 0) return 'arrow_downward';
+    if (priority === 'HIGH') return 'arrow_upward';
+    if (priority === 'MEDIUM') return 'arrow_forward';
+    return 'arrow_downward';
+  }
+
+  getIconColor(priority: string, available: number): string {
+    if (available === 0) return 'text-muted';
+    if (priority === 'HIGH') return 'priority-high';
+    if (priority === 'MEDIUM') return 'priority-medium';
+    return 'priority-low';
   }
 
   formatName(name: string): string {
-    return name.replace(/_/g, ' ');
-  }
-
-  getIconColor(priority: string, available: number = 0): string {
-    if (available <= 0) return 'gray-icon';
-    if (priority === 'HIGH') return 'green-icon';
-    if (priority === 'MEDIUM') return 'orange-icon';
-    return 'default-icon';
-  }
-
-  getPriorityIcon(priority: string, available: number = 0): string {
-    if (available <= 0) return 'block';
-    if (priority === 'HIGH') return 'flash_on';
-    if (priority === 'MEDIUM') return 'bolt';
-    return 'schedule';
-  }
-
-  trackByName(_: number, item: Cycle) {
-    return item.name;
+    return name.charAt(0).toUpperCase() + name.slice(1);
   }
 }

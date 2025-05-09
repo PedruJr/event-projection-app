@@ -1,13 +1,23 @@
-import { Component, computed, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  computed,
+  signal,
+  effect,
+  inject,
+  runInInjectionContext,
+  EnvironmentInjector
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventsChartComponent, ProjectedEventGroup as ChartRow } from '../../components/organisms/events-chart/events-chart.component';
 import { StartEntitiesComponent } from '../../components/organisms/start-entities/start-entities.component';
 import { CycleSelectorComponent } from '../../components/organisms/cycle-selector/cycle-selector.component';
-import { loadingProjectionSignal, projectedEventsSignal } from '../../../core/signals/projection.signal';
+import { projectedEventsSignal, loadingProjectionSignal } from '../../../core/signals/projection.signal';
 import { ProjectionService } from '../../../core/services/projection.service';
 import { startEntitiesSignal } from '../../../core/signals/start-entities.signal';
 import { cyclesSignal } from '../../../core/signals/cycles.signal';
 import { mockCycles } from '../../../core/mocks/mock-cycles';
+import { Cycle } from '../../../core/models/cycle.model';
 
 @Component({
   standalone: true,
@@ -51,23 +61,40 @@ export class EventProjectionComponent implements OnInit {
     return Object.values(grouped);
   });
 
-  private clickedOnce = false;
-
   constructor(private projectionService: ProjectionService) {}
 
   ngOnInit(): void {
-    console.log('[Init] Carregando dados iniciais convertidos...');
-    const initialProjection = this.projectionService.getProjectedEvents(mockCycles, 0);
-    projectedEventsSignal.set(initialProjection);
+    console.log('[Init] Carregando projeção inicial...');
+    projectedEventsSignal.set(this.projectionService.getProjectedEvents(mockCycles, 0));
+
+    const injector = inject(EnvironmentInjector);
+    runInInjectionContext(injector, () => {
+      const service = inject(ProjectionService);
+      effect(() => {
+        const entities = startEntitiesSignal();
+        const cycles = cyclesSignal();
+
+        console.log('[Effect] Ciclos/Entidades mudaram:', { entities, cycles });
+
+        if (!entities || entities <= 0 || cycles.length === 0) return;
+
+        loadingProjectionSignal.set(true);
+        const result = service.getProjectedEvents(cycles, entities);
+        projectedEventsSignal.set(result);
+        loadingProjectionSignal.set(false);
+
+        console.log('[Effect] Projeção atualizada:', result);
+      });
+    });
+  }
+
+  carregarMockInicial() {
+    console.log('[BOTÃO] Carregando projeção inicial convertida do mock...');
+    const result = this.projectionService.getProjectedEvents(mockCycles, 0);
+    projectedEventsSignal.set(result);
   }
 
   recalcularProjecao() {
-    if (!this.clickedOnce) {
-      this.clickedOnce = true;
-      console.log('[Recalcular] Ignorando primeiro clique automático');
-      return;
-    }
-
     const entities = startEntitiesSignal();
     const cycles = cyclesSignal();
 
@@ -85,11 +112,5 @@ export class EventProjectionComponent implements OnInit {
     loadingProjectionSignal.set(false);
 
     console.log('[Recalcular] Projeção concluída com:', result);
-  }
-
-  carregarMockInicial() {
-    console.log('[BOTÃO] Carregando projeção inicial convertida do mock...');
-    const result = this.projectionService.getProjectedEvents(mockCycles, 0);
-    projectedEventsSignal.set(result);
   }
 }
