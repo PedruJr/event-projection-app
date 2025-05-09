@@ -2,11 +2,7 @@ import {
   Component,
   OnInit,
   computed,
-  signal,
-  effect,
-  inject,
-  runInInjectionContext,
-  EnvironmentInjector
+  signal
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventsChartComponent, ProjectedEventGroup as ChartRow } from '../../components/organisms/events-chart/events-chart.component';
@@ -61,35 +57,39 @@ export class EventProjectionComponent implements OnInit {
     return Object.values(grouped);
   });
 
+  private lastEntities = startEntitiesSignal();
+  private lastCycles = JSON.stringify(cyclesSignal());
+
   constructor(private projectionService: ProjectionService) {}
 
   ngOnInit(): void {
-    console.log('[Init] Carregando projeção inicial...');
     projectedEventsSignal.set(this.projectionService.getProjectedEvents(mockCycles, 0));
 
-    const injector = inject(EnvironmentInjector);
-    runInInjectionContext(injector, () => {
-      const service = inject(ProjectionService);
-      effect(() => {
-        const entities = startEntitiesSignal();
-        const cycles = cyclesSignal();
+    setInterval(() => {
+      const entities = startEntitiesSignal();
+      const cycles = cyclesSignal();
 
-        console.log('[Effect] Ciclos/Entidades mudaram:', { entities, cycles });
+      const serialized = JSON.stringify(cycles);
+
+      if (
+        entities !== this.lastEntities ||
+        serialized !== this.lastCycles
+      ) {
+        this.lastEntities = entities;
+        this.lastCycles = serialized;
 
         if (!entities || entities <= 0 || cycles.length === 0) return;
 
         loadingProjectionSignal.set(true);
-        const result = service.getProjectedEvents(cycles, entities);
+        const result = this.projectionService.getProjectedEvents(cycles, entities);
         projectedEventsSignal.set(result);
         loadingProjectionSignal.set(false);
 
-        console.log('[Effect] Projeção atualizada:', result);
-      });
-    });
+      }
+    }, 300);
   }
 
   carregarMockInicial() {
-    console.log('[BOTÃO] Carregando projeção inicial convertida do mock...');
     const result = this.projectionService.getProjectedEvents(mockCycles, 0);
     projectedEventsSignal.set(result);
   }
@@ -97,9 +97,6 @@ export class EventProjectionComponent implements OnInit {
   recalcularProjecao() {
     const entities = startEntitiesSignal();
     const cycles = cyclesSignal();
-
-    console.log('[Recalcular] Entidades:', entities);
-    console.log('[Recalcular] Ciclos selecionados:', cycles);
 
     if (!entities || entities <= 0 || cycles.length === 0) {
       console.warn('[Recalcular] Dados insuficientes');
@@ -110,7 +107,5 @@ export class EventProjectionComponent implements OnInit {
     const result = this.projectionService.getProjectedEvents(cycles, entities);
     projectedEventsSignal.set(result);
     loadingProjectionSignal.set(false);
-
-    console.log('[Recalcular] Projeção concluída com:', result);
   }
 }

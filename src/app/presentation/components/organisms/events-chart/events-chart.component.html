@@ -3,4 +3,9 @@
   A previsão inclui eventos dos ciclos relacionados às entidades e é atualizada sempre que novas entidades forem iniciadas.
 </p>
 
-<div echarts [options]="chartOptions" class="chart"></div>
+<div
+  echarts
+  [options]="chartOptions"
+  class="chart"
+  (chartInit)="onChartInit($event)">
+</div>

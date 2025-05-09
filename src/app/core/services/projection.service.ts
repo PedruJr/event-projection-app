@@ -32,7 +32,6 @@ export class ProjectionService {
   getProjectedEvents(cycles: Cycle[], entitiesToStart: number): ProjectedEventGroup[] {
     const today = this.getTodayAsWeekday();
     const days = this.getNextFiveWeekdays(today);
-
     const result: ProjectedEventGroup[] = this.convertEventsProjectionToProjected();
 
     const ordered = [...cycles].sort((a, b) => {
@@ -45,7 +44,6 @@ export class ProjectionService {
     for (const cycle of ordered) {
       const canUse = Math.min(remaining, cycle.availableEntities ?? 0);
       remaining -= canUse;
-
       if (!canUse || !cycle.structure) continue;
 
       for (const day of days) {
@@ -54,7 +52,6 @@ export class ProjectionService {
           const activityType = type as ActivityType;
           const quantity = (baseEvents as any)[type] * canUse;
           const existing = result.find(r => r.dayOfWeek === day && r.activityType === activityType);
-
           if (existing) {
             existing.count += quantity;
           } else {
@@ -66,8 +63,6 @@ export class ProjectionService {
       if (remaining <= 0) break;
     }
 
-    console.log('[ProjectionService] Dias usados:', days);
-    console.log('[ProjectionService] Resultado final:', result);
     return result;
   }
 

@@ -8,28 +8,32 @@ import { NgClass, NgForOf, NgIf } from '@angular/common';
   selector: 'app-cycle-selector',
   templateUrl: './cycle-selector.component.html',
   styleUrls: ['./cycle-selector.component.scss'],
-  imports: [
-    MatIcon,
-    NgClass,
-    NgIf,
-    NgForOf
-  ]
+  imports: [MatIcon, NgClass, NgIf, NgForOf]
 })
 export class CycleSelectorComponent implements OnInit {
+  // Armazena todos os ciclos disponíveis
   allCycles: Cycle[] = [];
+
+  // Controla se a lista está expandida ou não
   expanded = signal(true);
 
   ngOnInit(): void {
+    // Carrega os ciclos ordenados por prioridade
     const cycles = orderedCyclesByPriority();
+
+    // Atualiza os ciclos visíveis no seletor
     this.allCycles = cycles;
+
+    // Envia os ciclos inicialmente selecionados para o signal global
     cyclesSignal.set(cycles.filter(c => c.selected));
-    console.log('[CycleSelector] Ciclos carregados:', cycles);
   }
 
+  // Alterna entre expandido/recolhido
   toggleExpand() {
     this.expanded.set(!this.expanded());
   }
 
+  // Alterna a seleção de um ciclo específico
   toggleCycle(cycleName: string) {
     this.allCycles = this.allCycles.map(c => {
       if (c.name === cycleName && c.availableEntities > 0) {
@@ -37,24 +41,28 @@ export class CycleSelectorComponent implements OnInit {
       }
       return c;
     });
-    const selected = this.allCycles.filter(c => c.selected);
 
+    // Atualiza os ciclos selecionados no signal global
+    const selected = this.allCycles.filter(c => c.selected);
     cyclesSignal.set(selected);
-    console.log('[CycleSelector] Ciclos atualizados:', selected);
   }
 
+  // Retorna ciclos com entidades disponíveis
   activeCycles(): Cycle[] {
     return this.allCycles.filter(c => c.availableEntities > 0);
   }
 
+  // Retorna ciclos sem entidades disponíveis
   disabledCycles(): Cycle[] {
     return this.allCycles.filter(c => c.availableEntities === 0);
   }
 
+  // Otimiza o ngFor com base no nome do ciclo
   trackByName(index: number, item: Cycle): string {
     return item.name;
   }
 
+  // Define o ícone com base na prioridade do ciclo
   getPriorityIcon(priority: string, available: number): string {
     if (available === 0) return 'arrow_downward';
     if (priority === 'HIGH') return 'arrow_upward';
@@ -62,6 +70,7 @@ export class CycleSelectorComponent implements OnInit {
     return 'arrow_downward';
   }
 
+  // Define a cor do ícone com base na prioridade e disponibilidade
   getIconColor(priority: string, available: number): string {
     if (available === 0) return 'text-muted';
     if (priority === 'HIGH') return 'priority-high';
@@ -69,6 +78,7 @@ export class CycleSelectorComponent implements OnInit {
     return 'priority-low';
   }
 
+  // Formata o nome do ciclo (primeira letra maiúscula)
   formatName(name: string): string {
     return name.charAt(0).toUpperCase() + name.slice(1);
   }
