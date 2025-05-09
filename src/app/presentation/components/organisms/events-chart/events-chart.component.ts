@@ -32,6 +32,7 @@ export class EventsChartComponent implements OnChanges {
   // Detecta mudanças nas propriedades do componente
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data']) {
+      console.log("changes que chegam no chart component", changes);
       const hasValidData = this.data.some(
         d => d.day && (d.encounters || d.messages || d.checkpoints || d.exploration)
       );

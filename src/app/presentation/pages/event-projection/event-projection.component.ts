@@ -13,7 +13,6 @@ import { ProjectionService } from '../../../core/services/projection.service';
 import { startEntitiesSignal } from '../../../core/signals/start-entities.signal';
 import { cyclesSignal } from '../../../core/signals/cycles.signal';
 import { mockCycles } from '../../../core/mocks/mock-cycles';
-import { Cycle } from '../../../core/models/cycle.model';
 
 @Component({
   standalone: true,
@@ -25,8 +24,11 @@ import { Cycle } from '../../../core/models/cycle.model';
 export class EventProjectionComponent implements OnInit {
   chartData = computed(() => {
     const raw = projectedEventsSignal();
+    const cycles = cyclesSignal();
+
     const grouped: Record<number, ChartRow> = {};
 
+    // Processa o fluxo padrão vindo do projectedEventsSignal()
     for (const item of raw) {
       if (!grouped[item.dayOfWeek]) {
         grouped[item.dayOfWeek] = {
@@ -51,6 +53,32 @@ export class EventProjectionComponent implements OnInit {
         case 'exploration':
           grouped[item.dayOfWeek].exploration += item.count;
           break;
+      }
+    }
+
+    // Processa também os dados vindos dos ciclos com estrutura
+    for (const cycle of cycles) {
+      const structure = cycle.structure;
+      if (!structure) continue;
+
+      for (const [dayStr, eventData] of Object.entries(structure)) {
+        const day = parseInt(dayStr, 10);
+        if (isNaN(day)) continue;
+
+        if (!grouped[day]) {
+          grouped[day] = {
+            day: `Dia ${day}`,
+            encounters: 0,
+            messages: 0,
+            checkpoints: 0,
+            exploration: 0,
+          };
+        }
+
+        grouped[day].encounters += eventData["meetings"] ?? 0;
+        grouped[day].messages += eventData["emails"] ?? 0;
+        grouped[day].checkpoints += eventData["calls"] ?? 0;
+        grouped[day].exploration += eventData["follows"] ?? 0;
       }
     }
 
