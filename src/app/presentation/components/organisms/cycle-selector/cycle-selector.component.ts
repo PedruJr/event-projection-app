@@ -24,7 +24,7 @@ export class CycleSelectorComponent implements OnInit {
 
   // Controla se a lista está expandida ou não
   expanded = signal(true);
-  disabledSectionExpanded = signal(true);
+  disabledSectionExpanded = signal(false);
 
   ngOnInit(): void {
     // Carrega os ciclos ordenados por prioridade
