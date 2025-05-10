@@ -17,8 +17,11 @@
           <input
             type="number"
             min="1"
+            step="1"
+            pattern="^[1-9]\d*$"
             [ngModel]="value()"
             (ngModelChange)="onValueChange($event)"
+            (keydown)="blockInvalidKeys($event)"
           />
         </div>
 
@@ -28,8 +31,9 @@
       </div>
 
       <div class="event-count">
-        Novos eventos para hoje: <strong>35 eventos</strong>
+        Novos eventos para hoje: <strong>{{ todayCount }} eventos</strong>
       </div>
     </div>
   </div>
 </section>
+<hr class="start-divider" />

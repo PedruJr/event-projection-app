@@ -1,59 +1,85 @@
 # EventProjectionApp
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.0.0-next.9.
+EventProjectionApp is a modern Angular application focused on event forecasting, using Angular 19+ with the latest best practices.
 
-## Development server
+---
 
-To start a local development server, run:
+## 📚 Tech Stack
 
-```bash
-ng serve
-```
+- **Angular 19 (Standalone Components + Signals)**
+- **Angular Material** (UI components library)
+- **ECharts** (Graph library for event projection charts)
+- **Atomic Design Architecture** (Organisms / Pages)
+- **State Management with Signals**
+- **Clean Code, SOLID, KISS principles**
+- **State-driven navigation (`showSplash`) instead of Router**
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## 🗂 Project Structure
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+src/  
+├── app/  
+│   ├── core/         # Signals, Services, Models, Utils, Mocks  
+│   └── presentation/ # Components (Organisms) and Pages  
+├── assets/            # Images and SplashScreen  
+└── styles.scss        # Global SCSS utilities
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🚀 Getting Started
 
-```bash
-ng generate --help
-```
+**Install Dependencies:**  
+yarn install
 
-## Building
+**Run the Development Server:**  
+yarn start
 
-To build the project run:
+After starting the server, access the app at:  
+http://localhost:4200
 
-```bash
-ng build
-```
+---
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## ⚡ Features
 
-## Running unit tests
+- **SplashScreen Control:** Splash appears on startup and disappears after 3 seconds automatically.
+- **State Management with Signals:** Entire cycles and event projections are managed reactively.
+- **Clean Architecture:** UI separated from services and business logic.
+- **Graphs with ECharts:** Fully customized stacked bar charts.
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+---
 
-```bash
-ng test
-```
+## 📜 Technical Decisions
 
-## Running end-to-end tests
+- **Angular Material** was chosen for UI consistency, simplicity, and ease of theme adaptation.
+- **ECharts** was chosen for its flexibility, performance, and capability to render complex stacked bar charts with minimal overhead.
+- **SplashScreen** implemented using a `showSplash` boolean state, avoiding router complexity.
+- **CSS Optimization:** Due to a visual library change during development (Material Template to direct ECharts integration), global SCSS utilities were introduced incrementally, ensuring visual consistency without breaking existing layouts.
+- **Future Improvements:** Full migration to SCSS utility classes across all components to increase maintainability and scalability.
 
-For end-to-end (e2e) testing, run:
+---
 
-```bash
-ng e2e
-```
+## 📷 Application Preview
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+![Cycle Selector Preview](src/assets/cycle-selector.gif)
 
-## Additional Resources
+---
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 🛠 Available Scripts
+
+| Command      | Purpose                          |
+|:-------------|:----------------------------------|
+| yarn start   | Run the development server        |
+| yarn build   | Build the project for production  |
+| yarn test    | Run unit tests                    |
+
+---
+
+## 📚 Further Resources
+
+- [Angular Standalone Components](https://angular.dev/guide/standalone-components)
+- [Angular Signals Overview](https://angular.dev/guide/signals)
+- [SCSS Modern Patterns](https://sass-lang.com/)
+- [ECharts Documentation](https://echarts.apache.org/)
+
+---

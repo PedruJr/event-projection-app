@@ -1,2 +1,2 @@
-<router-outlet />
-<app-event-projection></app-event-projection>
+<app-splash-screen *ngIf="showSplash" />
+<app-event-projection *ngIf="!showSplash" />

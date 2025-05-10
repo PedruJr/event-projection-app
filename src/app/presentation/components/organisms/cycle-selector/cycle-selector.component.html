@@ -11,32 +11,38 @@
     Por padrão as entidades são selecionadas automaticamente de acordo com os ciclos que você participa e suas prioridades
   </p>
 
-  <div class="column-titles" *ngIf="expanded">
-    <span class="highlight">Ciclos <mat-icon class="down-icon">expand_more</mat-icon></span>
+  <div class="column-titles" *ngIf="expanded()">
+    <span class="highlight" (click)="toggleDisabledSection()">
+      Ciclos
+      <mat-icon class="down-icon">
+        {{ disabledSectionExpanded() ? 'expand_less' : 'expand_more' }}
+      </mat-icon>
+    </span>
     <span class="column-label">Selecionados/Disponíveis</span>
     <span class="column-label">Eventos para hoje</span>
   </div>
 
-  <div class="table-wrapper" *ngIf="expanded">
+  <div class="table-wrapper" *ngIf="expanded()">
     <div class="section-subtitle">Ciclos com entidades disponíveis ({{ activeCycles().length }})</div>
     <div class="divider-line"></div>
     <table>
       <tbody>
-      <tr *ngFor="let cycle of activeCycles(); trackBy: trackByName" class="row-spacing">
+      <!-- Mostra no máximo 3 ciclos ativos -->
+      <tr *ngFor="let cycle of activeCycles().slice(0, 4); trackBy: trackByName"
+          class="row-spacing"
+          [ngClass]="{ 'dimmed-row': !cycle.selected }">
         <td>
           <div class="row">
-            <label class="checkbox-wrapper" [class.disabled]="cycle.availableEntities === 0">
+            <label class="checkbox-wrapper">
               <input
                 type="checkbox"
-                [checked]="cycle.selected"
+                [checked]="true"
                 [disabled]="cycle.availableEntities === 0"
                 (change)="toggleCycle(cycle.name)"
               />
               <span class="custom-checkmark"></span>
             </label>
-            <mat-icon
-              class="priority-icon"
-              [ngClass]="getIconColor(cycle.priority, cycle.availableEntities)">
+            <mat-icon class="priority-icon" [ngClass]="getIconColor(cycle.priority, cycle.availableEntities)">
               {{ getPriorityIcon(cycle.priority, cycle.availableEntities) }}
             </mat-icon>
             <span class="cycle-name">{{ formatName(cycle.name) }}</span>
@@ -49,23 +55,21 @@
         <td class="black-text">{{ cycle.todayEvents }}</td>
       </tr>
 
-      <tr *ngIf="disabledCycles().length" class="section-subtitle">
-        <td colspan="3">Ciclos sem entidades disponíveis</td>
-      </tr>
-      <tr *ngFor="let cycle of disabledCycles(); trackBy: trackByName" class="row-spacing disabled-row">
-        <td>
-          <div class="row">
-            <label class="checkbox-wrapper disabled">
-              <input type="checkbox" disabled />
-              <span class="custom-checkmark disabled"></span>
-            </label>
-            <mat-icon class="priority-icon blue-twitter">arrow_downward</mat-icon>
-            <span class="cycle-name">{{ formatName(cycle.name) }}</span>
-          </div>
-        </td>
-        <td class="column-value">0/{{ cycle.availableEntities }}</td>
-        <td class="black-text">0</td>
-      </tr>
+      <ng-container *ngIf="activeCycles().length > 4 && disabledSectionExpanded()">
+        <tr class="section-subtitle">
+          <td colspan="3">Ciclos sem entidades disponíveis</td>
+        </tr>
+        <tr *ngFor="let cycle of mockedDisabledCycles; let i = index" class="row-spacing">
+          <td>
+            <div class="row-disabled">
+              <mat-icon class="priority-icon" [ngClass]="getMockedPriorityColor(i)">
+                {{ getMockedPriorityIcon(i) }}
+              </mat-icon>
+              <span class="cycle-name-disabled">{{ formatName(cycle.name) }}</span>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
       </tbody>
     </table>
   </div>

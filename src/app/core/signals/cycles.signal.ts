@@ -1,19 +1,19 @@
-import { computed, signal } from '@angular/core';
+import { signal, computed } from '@angular/core';
 import { Cycle } from '../models/cycle.model';
+import { mockCycles } from '../mocks/mock-cycles';
 
-const initialCycles: Cycle[] = [];
+export const allCyclesSignal = signal<Cycle[]>(mockCycles);
+export const cyclesSignal = signal<Cycle[]>([]);
 
-export const cyclesSignal = signal<Cycle[]>(initialCycles);
-
-export const cycles = computed(() => cyclesSignal());
-
-export const setCycles = (cycles: Cycle[]) => {
-  cyclesSignal.set(cycles);
-};
-
-export const toggleCycleSelection = (name: string) => {
-  const updated = cyclesSignal().map(c =>
-    c.name === name ? { ...c, selected: !c.selected } : c
+export const orderedCyclesByPriority = computed(() => {
+  const priorityMap = { HIGH: 3, MEDIUM: 2, LOW: 1 };
+  return [...allCyclesSignal()].sort(
+    (a, b) => priorityMap[b.priority] - priorityMap[a.priority]
   );
-  cyclesSignal.set(updated);
-};
+});
+
+export function setCycles(cycles: Cycle[]) {
+  allCyclesSignal.set(cycles);
+  const preselected = cycles.filter(c => c.priority === 'HIGH');
+  cyclesSignal.set(preselected);
+}

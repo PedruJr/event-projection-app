@@ -1,6 +1,8 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgxEchartsModule } from 'ngx-echarts';
+import { EventsChartService } from '../../../../core/services/events-chart.service';
+import { ErrorService } from '../../../../core/services/error.service'; // 👈 Importado
 
 export interface ProjectedEventGroup {
   day: string;
@@ -9,6 +11,8 @@ export interface ProjectedEventGroup {
   checkpoints: number;
   exploration: number;
 }
+
+type EChartsInstance = any;
 
 @Component({
   standalone: true,
@@ -19,106 +23,36 @@ export interface ProjectedEventGroup {
 })
 export class EventsChartComponent implements OnChanges {
   @Input() data: ProjectedEventGroup[] = [];
-
   chartOptions: any = {};
+  private chartRef: EChartsInstance | null = null;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['data']) {
-      this.updateChartOptions();
+    try {
+      if (changes['data']) {
+        const hasValidData = this.data.some(
+          d => d.day && (d.encounters || d.messages || d.checkpoints || d.exploration)
+        );
+
+        if (!hasValidData) {
+          this.chartOptions = {};
+          return;
+        }
+
+        const options = EventsChartService.generateChartOptions(this.data, this.chartRef);
+        if (options) {
+          this.chartOptions = options;
+        }
+      }
+    } catch (error) {
+      ErrorService.logError(error, 'EventsChartComponent - ngOnChanges');
     }
   }
 
-  private updateChartOptions() {
-    this.chartOptions = {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: { type: 'shadow' }
-      },
-      legend: {
-        bottom: 0,
-        itemGap: 40,
-        itemWidth: 16,
-        itemHeight: 16,
-        symbol: 'rect',
-        textStyle: {
-          fontSize: 12,
-          color: '#000',
-          fontWeight: 500
-        },
-        data: ['Encontros', 'Mensagens', 'Checkpoints', 'Exploração']
-      },
-      grid: {
-        left: '6%',
-        right: '4%',
-        bottom: '20%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: this.data.map(d => d.day),
-        boundaryGap: true,
-        axisTick: { alignWithLabel: true },
-        axisLabel: {
-          align: 'center',
-          interval: 0
-        },
-        offset: 12
-      },
-      yAxis: {
-        type: 'value',
-        name: 'Quantidade de Eventos',
-        max: 200,
-        interval: 50,
-        nameRotate: 90,
-        nameLocation: 'center',
-        nameGap: 50,
-        nameTextStyle: {
-          fontWeight: 500,
-          fontSize: 14
-        },
-        axisLabel: {
-          fontWeight: 600
-        }
-      },
-      color: ['#4CAF50', '#616161', '#00BCD4', '#7E57C2'],
-      series: [
-        {
-          name: 'Encontros',
-          type: 'bar',
-          stack: 'total',
-          barWidth: '50%',
-          emphasis: { focus: 'series' },
-          itemStyle: { opacity: 0.75 },
-          data: this.data.map(d => d.encounters)
-        },
-        {
-          name: 'Mensagens',
-          type: 'bar',
-          stack: 'total',
-          barWidth: '50%',
-          emphasis: { focus: 'series' },
-          itemStyle: { opacity: 0.75 },
-          data: this.data.map(d => d.messages)
-        },
-        {
-          name: 'Checkpoints',
-          type: 'bar',
-          stack: 'total',
-          barWidth: '50%',
-          emphasis: { focus: 'series' },
-          itemStyle: { opacity: 0.75 },
-          data: this.data.map(d => d.checkpoints)
-        },
-        {
-          name: 'Exploração',
-          type: 'bar',
-          stack: 'total',
-          barWidth: '50%',
-          emphasis: { focus: 'series' },
-          itemStyle: { opacity: 0.75 },
-          data: this.data.map(d => d.exploration)
-        }
-      ]
-    };
+  onChartInit(chart: EChartsInstance) {
+    try {
+      this.chartRef = chart;
+    } catch (error) {
+      ErrorService.logError(error, 'EventsChartComponent - onChartInit');
+    }
   }
 }

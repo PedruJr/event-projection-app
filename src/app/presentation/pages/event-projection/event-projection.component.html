@@ -1,6 +1,15 @@
 <div class="page-wrapper">
-  <h2 >Iniciar novas Entidades</h2>
+  <div class="header">
+    <h2>Iniciar novas Entidades</h2>
+    <button (click)="navigateToSplash()" class="close-btn" aria-label="Fechar">×</button>
+  </div>
+
   <app-start-entities />
   <app-cycle-selector />
   <app-events-chart [data]="chartData()" />
+
+  <div class="actions">
+    <button class="secondary-btn" (click)="navigateToSplash()">Fechar</button>
+    <button class="primary-btn" (click)="recalcularProjecao()">Iniciar novas entidades</button>
+  </div>
 </div>
