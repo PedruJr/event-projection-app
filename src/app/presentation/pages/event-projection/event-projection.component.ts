@@ -13,6 +13,8 @@ import { ProjectionService } from '../../../core/services/projection.service';
 import { startEntitiesSignal } from '../../../core/signals/start-entities.signal';
 import { cyclesSignal } from '../../../core/signals/cycles.signal';
 import { mockCycles } from '../../../core/mocks/mock-cycles';
+import { inject } from '@angular/core';
+import {App} from '../../../app';
 
 @Component({
   standalone: true,
@@ -87,6 +89,7 @@ export class EventProjectionComponent implements OnInit {
 
   private lastEntities = startEntitiesSignal();
   private lastCycles = JSON.stringify(cyclesSignal());
+  private appComponent = inject(App);
 
   constructor(private projectionService: ProjectionService) {}
 
@@ -127,5 +130,13 @@ export class EventProjectionComponent implements OnInit {
       projectedEventsSignal.set([...current]);
       loadingProjectionSignal.set(false);
     }, 500);
+  }
+
+
+  navigateToSplash() {
+    this.appComponent.showSplash = true;
+    setTimeout(() => {
+      this.appComponent.showSplash = false;
+    }, 3000);
   }
 }

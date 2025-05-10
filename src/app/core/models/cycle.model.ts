@@ -5,5 +5,5 @@ export interface Cycle {
   priority: 'HIGH' | 'MEDIUM' | 'LOW';
   selectedEntities: number;
   todayEvents: number;
-  structure?: Record<number, Record<string, number>>; // <== importante!
+  structure?: Record<number, Record<string, number>>;
 }

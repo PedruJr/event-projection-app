@@ -5,7 +5,7 @@ export const startEntitiesSignal = signal<number>(1);
 export const startEntities = signal<number>(1);
 
 export const setStartEntities = (value: number) => {
-  const safe = Math.max(1, value); // nunca menor que 1
+  const safe = Math.max(1, value);
   startEntities.set(safe);
 };
 

@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { startEntitiesSignal } from '../../../../core/signals/start-entities.signal';
-import { projectedEventsSignal } from '../../../../core/signals/projection.signal';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import type { ProjectedEventGroup } from '../../../../core/services/projection.service';
+import { StartEntitiesService } from '../../../../core/services/start-entities.service';
+import { blockInvalidKeys as blockInvalidKeysUtil } from '../../../../core/utils/input-validators';
+import { ErrorService } from '../../../../core/services/error.service'; // 👈 Importado
 
 @Component({
   selector: 'app-start-entities',
@@ -14,36 +15,31 @@ import type { ProjectedEventGroup } from '../../../../core/services/projection.s
   styleUrls: ['./start-entities.component.scss']
 })
 export class StartEntitiesComponent {
-  // Referência ao signal reativo de entidades
   value = startEntitiesSignal;
 
-  // Acesso direto à projeção atual de eventos
-  eventsToday = projectedEventsSignal;
-
-  // Atualiza o número de entidades ao mudar input
   onValueChange(value: string) {
-    const num = parseInt(value, 10);
-    if (!isNaN(num) && num >= 1) {
-      startEntitiesSignal.set(num);
-    } else {
-      startEntitiesSignal.set(1);
+    try {
+      const num = parseInt(value, 10);
+      startEntitiesSignal.set(!isNaN(num) && num >= 1 ? num : 1);
+    } catch (error) {
+      ErrorService.logError(error, 'StartEntitiesComponent - onValueChange');
     }
   }
 
-  // Soma total de eventos do dia atual
   get todayCount(): number {
-    const today = new Date().getDay() === 0 ? 1 : new Date().getDay();
-    const total = this.eventsToday()
-      .filter((e: ProjectedEventGroup) => e.dayOfWeek === today)
-      .reduce((acc: number, cur: ProjectedEventGroup) => acc + cur.count, 0);
-    return total;
+    try {
+      return StartEntitiesService.getTodayCount();
+    } catch (error) {
+      ErrorService.logError(error, 'StartEntitiesComponent - todayCount');
+      return 0;
+    }
   }
 
-  // Bloqueia caracteres inválidos no input
   blockInvalidKeys(event: KeyboardEvent) {
-    const invalidKeys = ['-', '+', 'e', 'E', '.', ',', '0'];
-    if (invalidKeys.includes(event.key)) {
-      event.preventDefault();
+    try {
+      blockInvalidKeysUtil(event);
+    } catch (error) {
+      ErrorService.logError(error, 'StartEntitiesComponent - blockInvalidKeys');
     }
   }
 }

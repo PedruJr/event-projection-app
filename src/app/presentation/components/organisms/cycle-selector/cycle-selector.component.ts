@@ -11,7 +11,6 @@ import { NgClass, NgForOf, NgIf } from '@angular/common';
   imports: [MatIcon, NgClass, NgIf, NgForOf]
 })
 export class CycleSelectorComponent implements OnInit {
-  // Armazena todos os ciclos disponíveis
   allCycles: Cycle[] = [];
   mockedDisabledCycles = [
     { name: 'Duvidas LGPD', availableEntities: 0 },

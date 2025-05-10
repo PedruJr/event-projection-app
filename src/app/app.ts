@@ -20,7 +20,7 @@ export class App implements OnInit {
     setCycles(mockCycles);
     setTimeout(() => {
       this.showSplash = false;
-    }, 3000); // 3 segundos
+    }, 2000);
   }
   title = 'event-projection-app';
 }
